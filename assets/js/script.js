@@ -23,6 +23,7 @@ function generatePastSearchButton(cityName) {
     pastSearch.textContent = cityName;
     pastSearch.addEventListener("click", function() {
         getSavedWeather(cityName);
+        getSavedFiveDayForecast(cityName);
     });
     pastSearchArea.appendChild(pastSearch);
 }
@@ -72,7 +73,7 @@ async function getFiveDayForecast() {
     const response = await fetch(request);
     const data = await response.json();
     console.log(data);
-
+    fiveDayForecast.innerHTML = "";
     data.list.forEach(forecast => {
         var forecastDateTime = forecast.dt_txt;
         var forecastTime = forecastDateTime.split(' ')[1];
@@ -83,8 +84,8 @@ async function getFiveDayForecast() {
             var forcastCard = document.createElement("card")
             var forecastHTML = `
                 <h3>${displayedDate}</h3>
-                <p>Temp: ${forecast.main.temp}</p>
-                <p>Wind: ${forecast.wind.speed}</p>
+                <p>Temp: ${forecast.main.temp}℉</p>
+                <p>Wind: ${forecast.wind.speed}MPH</p>
                 <p>Humidity: ${forecast.main.humidity}%</P>
                 `;
             forcastCard.innerHTML = forecastHTML;
@@ -100,14 +101,50 @@ async function getSavedWeather(cityName) {
     const data = await response.json();
     console.log(data);
 
+    var iconCode = data.weather[0].icon;
+    var iconURL = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+    var iconImg = document.createElement("img");
+    iconImg.src = iconURL;
     cityNameEle.textContent = cityName + " (" + currentDay + ")";
     temperatureEle.textContent = "Temp: " + data.main.temp + "℉";
     windEle.textContent = "Wind: " + data.wind.speed + "MPH";
     humidityEle.textContent = "Humidity: " + data.main.humidity + "%";
+    cityNameEle.appendChild(iconImg);
 }
 
+async function getSavedFiveDayForecast(cityName) {
+    var request = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=imperial`;
+    const response = await fetch(request);
+    const data = await response.json();
+    console.log(data);
+    fiveDayForecast.innerHTML = "";
+    data.list.forEach(forecast => {
+        var forecastDateTime = forecast.dt_txt;
+        var forecastTime = forecastDateTime.split(' ')[1];
+        var displayedDate = forecast.dt_txt.split(' ')[0];
+        
+        
+        if (forecastTime === '12:00:00') {
+            var forcastCard = document.createElement("card")
+            var forecastHTML = `
+                <h3>${displayedDate}</h3>
+                <p>Temp: ${forecast.main.temp}℉</p>
+                <p>Wind: ${forecast.wind.speed}MPH</p>
+                <p>Humidity: ${forecast.main.humidity}%</P>
+                `;
+            forcastCard.innerHTML = forecastHTML;
+            fiveDayForecast.appendChild(forcastCard);
+        }
+    });
+}
 
-
+searchInput.addEventListener("keydown", function(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      getWeather()
+    }
+  });
+  
 searchButton.addEventListener("click", getWeather);
 
 
