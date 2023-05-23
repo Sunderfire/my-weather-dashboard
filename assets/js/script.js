@@ -82,8 +82,10 @@ async function getFiveDayForecast() {
         
         if (forecastTime === '12:00:00') {
             var forcastCard = document.createElement("card")
+            var iconCode = forecast.weather[0].icon;
             var forecastHTML = `
                 <h3>${displayedDate}</h3>
+                <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="Weather Icon">
                 <p>Temp: ${forecast.main.temp}℉</p>
                 <p>Wind: ${forecast.wind.speed}MPH</p>
                 <p>Humidity: ${forecast.main.humidity}%</P>
