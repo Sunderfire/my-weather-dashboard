@@ -15,6 +15,14 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+//Function to keep past search buttons on reload
+window.addEventListener("DOMContentLoaded", function() {
+    var storedCityName = localStorage.getItem("savedCityName");
+    if (storedCityName) {
+      generatePastSearchButton(storedCityName);
+    }
+  });
+
 //Generate Past Search Buttons
 function generatePastSearchButton(cityName) {
     var pastSearch = document.createElement("button");
@@ -22,7 +30,7 @@ function generatePastSearchButton(cityName) {
     pastSearch.className = "btn btn-primary m-1";
     pastSearch.textContent = cityName;
     pastSearch.addEventListener("click", function() {
-        getSavedWeather(cityName);
+        getSavedWeather(cityName);  
         getSavedFiveDayForecast(cityName);
     });
     pastSearchArea.appendChild(pastSearch);
@@ -128,8 +136,10 @@ async function getSavedFiveDayForecast(cityName) {
         
         if (forecastTime === '12:00:00') {
             var forcastCard = document.createElement("card")
+            var iconCode = forecast.weather[0].icon;
             var forecastHTML = `
                 <h3>${displayedDate}</h3>
+                <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="Weather Icon">
                 <p>Temp: ${forecast.main.temp}℉</p>
                 <p>Wind: ${forecast.wind.speed}MPH</p>
                 <p>Humidity: ${forecast.main.humidity}%</P>
